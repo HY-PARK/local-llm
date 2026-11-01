@@ -2,6 +2,8 @@
 
 2주차에는 Mac에서 Ollama 모델을 실행하고, Python으로 간단한 챗봇을 만드는 방법을 학습했다. 기본 질문부터 시스템 프롬프트, 스트리밍, 대화 기록 저장까지 실습한 뒤 두 모델이 서로 토론하는 프로그램으로 확장했다.
 
+실습 코드: [my-ai-chatbot](my-ai-chatbot/)
+
 ## 1. 로컬 모델 실행하기
 
 Ollama로 모델을 내려받고 터미널에서 대화하는 방법을 배웠다. 모델을 선택할 때는 모델 크기와 컴퓨터의 메모리를 함께 고려하고, 양자화로 모델의 메모리 사용량을 줄일 수 있다는 점도 학습했다.
@@ -25,18 +27,18 @@ source .venv/bin/activate
 python -m pip install ollama streamlit
 ```
 
-설치한 패키지는 `requirements.txt`로 기록해 두었다. 다른 환경에서도 같은 버전의 패키지를 설치할 때 사용할 수 있다.
+설치한 패키지는 [requirements.txt](my-ai-chatbot/requirements.txt)로 기록해 두었다. 다른 환경에서도 같은 버전의 패키지를 설치할 때 사용할 수 있다.
 
 ```bash
 python -m pip freeze > requirements.txt
 python -m pip install -r requirements.txt
 ```
 
-이번에 작성한 예제는 터미널에서 실행하는 Python 프로그램이다.
+이번에 작성한 예제는 터미널에서 실행하는 Python 프로그램이다. 간단한 출력 확인 코드는 [hello.py](my-ai-chatbot/hello.py)에 있다.
 
 ## 3. Python으로 모델에 질문하기
 
-`chat_basic.py`에서는 모델에 질문 하나를 보내고 답변을 출력했다. `ollama.chat()`에 모델 이름과 메시지를 전달하면 응답을 받을 수 있다.
+[chat_basic.py](my-ai-chatbot/chat_basic.py)에서는 모델에 질문 하나를 보내고 답변을 출력했다. `ollama.chat()`에 모델 이름과 메시지를 전달하면 응답을 받을 수 있다.
 
 ```python
 import ollama
@@ -63,13 +65,15 @@ print(response["message"]["content"])
 | `user` | 사용자의 질문이나 요청 |
 | `assistant` | 모델이 생성한 답변 |
 
-`chat_stream1.py`부터 `chat_stream3.py`까지는 “광합성이란 무엇인가?”라는 같은 질문에 서로 다른 역할을 설정한 예제다. 엄격한 수학 교수, 쉬운 단어를 사용하는 유치원 선생님, 책을 추천하는 사서라는 지침을 각각 작성했다.
+[chat_stream1.py](my-ai-chatbot/chat_stream1.py)부터 [chat_stream3.py](my-ai-chatbot/chat_stream3.py)까지는 “광합성이란 무엇인가?”라는 같은 질문에 서로 다른 역할을 설정한 예제다. 엄격한 수학 교수, 쉬운 단어를 사용하는 유치원 선생님, 책을 추천하는 사서라는 지침을 각각 작성했다.
+
+역할별 코드는 [수학 교수](my-ai-chatbot/chat_stream1.py), [유치원 선생님](my-ai-chatbot/chat_stream2.py), [사서](my-ai-chatbot/chat_stream3.py) 예제에서 확인할 수 있다. [chat_system.py](my-ai-chatbot/chat_system.py)에는 비교를 위해 주석 처리해 둔 시스템 프롬프트 예제도 있다.
 
 질문뿐 아니라 어떤 역할과 설명 방식을 지정하는지도 챗봇을 구성하는 중요한 요소라는 점을 배웠다.
 
 ## 5. 스트리밍으로 답변 출력하기
 
-`chat_stream.py`에서는 `stream=True`를 사용했다. 답변 전체가 완성될 때까지 기다리는 대신, 생성 중인 내용을 전달받는 대로 화면에 출력하는 방식이다.
+[chat_stream.py](my-ai-chatbot/chat_stream.py)에서는 `stream=True`를 사용했다. 답변 전체가 완성될 때까지 기다리는 대신, 생성 중인 내용을 전달받는 대로 화면에 출력하는 방식이다.
 
 ```python
 stream = ollama.chat(
@@ -86,7 +90,7 @@ for chunk in stream:
 
 ## 6. 대화 이어 가기와 기록 저장하기
 
-`chat_history.py`에서는 사용자 입력을 반복해서 받고, 질문과 답변을 `history` 리스트에 추가했다. 다음 요청에도 이 리스트를 함께 전달해 앞선 대화를 참고할 수 있도록 했다.
+[chat_history.py](my-ai-chatbot/chat_history.py)에서는 사용자 입력을 반복해서 받고, 질문과 답변을 `history` 리스트에 추가했다. 다음 요청에도 이 리스트를 함께 전달해 앞선 대화를 참고할 수 있도록 했다.
 
 ```text
 사용자 입력 → 기록에 추가 → 모델 호출 → 답변을 기록에 추가 → 다음 입력
@@ -94,20 +98,20 @@ for chunk in stream:
 
 대화 맥락을 유지하려면 사용자 질문뿐 아니라 모델의 답변도 함께 보관해야 한다는 점을 배웠다.
 
-`chat_history_improve.py`에는 `exit` 또는 `quit`으로 종료할 때 대화 내용을 `chat_history.txt`에 저장하는 기능을 추가했다. 실제 저장 파일에서 시스템 프롬프트와 사용자 질문, 모델 답변을 확인할 수 있었다. 현재는 저장까지 구현했으며, 다음 실행에서 파일을 읽어 대화를 이어 가는 기능은 포함하지 않았다.
+[chat_history_improve.py](my-ai-chatbot/chat_history_improve.py)에는 `exit` 또는 `quit`으로 종료할 때 대화 내용을 `chat_history.txt`에 저장하는 기능을 추가했다. 실제 저장 파일에서 시스템 프롬프트와 사용자 질문, 모델 답변을 확인할 수 있었다. 현재는 저장까지 구현했으며, 다음 실행에서 파일을 읽어 대화를 이어 가는 기능은 포함하지 않았다.
 
 ## 7. 번역기와 퀴즈 봇으로 응용하기
 
 시스템 프롬프트를 바꿔 간단한 용도의 예제도 작성했다.
 
-- **번역기 (`translator.py`)**: “Start the quiz.”를 일본어, 스페인어, 프랑스어로 번역하고 목록으로 출력하도록 설정했다.
-- **퀴즈 봇 (`quiz_bot.py`)**: 퀴즈 진행자 역할을 지정하고 “Start the quiz.”라는 메시지로 첫 문제를 요청했다.
+- **번역기 ([translator.py](my-ai-chatbot/translator.py))**: “Start the quiz.”를 일본어, 스페인어, 프랑스어로 번역하고 목록으로 출력하도록 설정했다.
+- **퀴즈 봇 ([quiz_bot.py](my-ai-chatbot/quiz_bot.py))**: 퀴즈 진행자 역할을 지정하고 “Start the quiz.”라는 메시지로 첫 문제를 요청했다.
 
 퀴즈 봇에는 정답 확인과 점수 관리 지침도 넣었지만, 현재 코드는 첫 응답을 받는 단계까지다. 실제로 문제를 계속 풀려면 사용자 입력과 대화 기록을 유지하는 루프를 연결해야 한다.
 
 ## 8. 두 모델에게 토론시키기
 
-마지막으로 `debate.py`에서는 “개와 고양이 중 누가 더 좋은 반려동물인가?”라는 주제로 두 모델이 대화하도록 만들었다.
+마지막으로 [debate.py](my-ai-chatbot/debate.py)에서는 “개와 고양이 중 누가 더 좋은 반려동물인가?”라는 주제로 두 모델이 대화하도록 만들었다.
 
 | 모델 | 역할 |
 | --- | --- |
@@ -124,5 +128,6 @@ for chunk in stream:
 
 서로 자기 의견만 말하는 것이 아니라, **상대가 한 말을 받아서 반박하는 대화가 잘 이어지는 것을 확인할 수 있었다.** 기본 챗봇에서 배운 역할 설정과 대화 기록을 활용해 두 모델의 토론까지 구현할 수 있었다.
 
-학습 자료: [Core skills: Building your first AI chatbot](https://gasidaseo.notion.site/Core-skills-Building-your-first-AI-chatbot-40650aec5edf80f3adadf4442b2e6166)  
+학습 자료: [Core skills: Building your first AI chatbot](https://gasidaseo.notion.site/Core-skills-Building-your-first-AI-chatbot-40650aec5edf80f3adadf4442b2e6166)
+
 API 참고: [Ollama Python 라이브러리 공식 문서](https://github.com/ollama/ollama-python)
