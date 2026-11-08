@@ -1,0 +1,9 @@
+{
+  "ollama": {
+    "default_model": "gemma3:1b",
+    "models": [
+      {"name": "gemma3:1b", "label": "Gemma 3 1B",
+       "notes": "Lightweight Gemma 3 model. Recommended default for 8 GB RAM."}
+    ]
+  }
+}
